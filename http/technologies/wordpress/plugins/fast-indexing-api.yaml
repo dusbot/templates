@@ -1,0 +1,49 @@
+id: wordpress-fast-indexing-api
+
+info:
+  name: Instant Indexing for Google Detection
+  author: ricardomaia
+  severity: info
+  reference:
+    - https://wordpress.org/plugins/fast-indexing-api/
+  metadata:
+    plugin_namespace: fast-indexing-api
+    wpscan: https://wpscan.com/plugin/fast-indexing-api
+  tags: tech,wordpress,wp-plugin,top-200
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/wp-content/plugins/fast-indexing-api/readme.txt"
+
+    payloads:
+      last_version: helpers/wordpress/plugins/fast-indexing-api.txt
+
+    extractors:
+      - type: regex
+        part: body
+        internal: true
+        name: internal_detected_version
+        group: 1
+        regex:
+          - '(?i)Stable.tag:\s?([\w.]+)'
+
+      - type: regex
+        part: body
+        name: detected_version
+        group: 1
+        regex:
+          - '(?i)Stable.tag:\s?([\w.]+)'
+
+    matchers-condition: or
+    matchers:
+      - type: dsl
+        name: "outdated_version"
+        dsl:
+          - compare_versions(internal_detected_version, concat("< ", last_version))
+
+      - type: regex
+        part: body
+        regex:
+          - '(?i)Stable.tag:\s?([\w.]+)'
+# digest: 4b0a00483046022100d0585061bacb8180ad78a67c95f9b88091a7b56ca333d054ef5eb9aba8d65c6b022100916d77a23d6f69eabca4fb090deb269d23b936e83a792228ecf728ab12a6afa4:922c64590222798bb761d5b6d8e72950

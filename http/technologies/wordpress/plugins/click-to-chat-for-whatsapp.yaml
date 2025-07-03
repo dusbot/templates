@@ -1,0 +1,49 @@
+id: wordpress-click-to-chat-for-whatsapp
+
+info:
+  name: Click to Chat – HoliThemes Detection
+  author: ricardomaia
+  severity: info
+  reference:
+    - https://wordpress.org/plugins/click-to-chat-for-whatsapp/
+  metadata:
+    plugin_namespace: click-to-chat-for-whatsapp
+    wpscan: https://wpscan.com/plugin/click-to-chat-for-whatsapp
+  tags: tech,wordpress,wp-plugin,top-100,top-200
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/wp-content/plugins/click-to-chat-for-whatsapp/readme.txt"
+
+    payloads:
+      last_version: helpers/wordpress/plugins/click-to-chat-for-whatsapp.txt
+
+    extractors:
+      - type: regex
+        part: body
+        internal: true
+        name: internal_detected_version
+        group: 1
+        regex:
+          - '(?i)Stable.tag:\s?([\w.]+)'
+
+      - type: regex
+        part: body
+        name: detected_version
+        group: 1
+        regex:
+          - '(?i)Stable.tag:\s?([\w.]+)'
+
+    matchers-condition: or
+    matchers:
+      - type: dsl
+        name: "outdated_version"
+        dsl:
+          - compare_versions(internal_detected_version, concat("< ", last_version))
+
+      - type: regex
+        part: body
+        regex:
+          - '(?i)Stable.tag:\s?([\w.]+)'
+# digest: 4b0a00483046022100cc2a42d48a95c0f1bef459d0344d04bd74e2314ce4de5a07626f7b2a20864161022100f8d32df2b83b339e56273e2a51571f6a418c9a24ad6f3799e65ac3850787cf0b:922c64590222798bb761d5b6d8e72950

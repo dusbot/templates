@@ -1,0 +1,49 @@
+id: wordpress-font-awesome
+
+info:
+  name: Font Awesome Detection
+  author: ricardomaia
+  severity: info
+  reference:
+    - https://wordpress.org/plugins/font-awesome/
+  metadata:
+    plugin_namespace: font-awesome
+    wpscan: https://wpscan.com/plugin/font-awesome
+  tags: tech,wordpress,wp-plugin,top-200
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/wp-content/plugins/font-awesome/readme.txt"
+
+    payloads:
+      last_version: helpers/wordpress/plugins/font-awesome.txt
+
+    extractors:
+      - type: regex
+        part: body
+        internal: true
+        name: internal_detected_version
+        group: 1
+        regex:
+          - '(?i)Stable.tag:\s?([\w.]+)'
+
+      - type: regex
+        part: body
+        name: detected_version
+        group: 1
+        regex:
+          - '(?i)Stable.tag:\s?([\w.]+)'
+
+    matchers-condition: or
+    matchers:
+      - type: dsl
+        name: "outdated_version"
+        dsl:
+          - compare_versions(internal_detected_version, concat("< ", last_version))
+
+      - type: regex
+        part: body
+        regex:
+          - '(?i)Stable.tag:\s?([\w.]+)'
+# digest: 4a0a004730450221009bb5e0a016f31b1bd639060369d40f22fb7273bc439833798aec2ca2e37a131002204113736491b44ca9f4425be3162377de781d84de40d07d11fd43f82307eadd38:922c64590222798bb761d5b6d8e72950

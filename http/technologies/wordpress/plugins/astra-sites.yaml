@@ -1,0 +1,49 @@
+id: wordpress-astra-sites
+
+info:
+  name: Starter Templates – AI-Powered Templates for Elementor & Gutenberg Detection
+  author: ricardomaia
+  severity: info
+  reference:
+    - https://wordpress.org/plugins/astra-sites/
+  metadata:
+    plugin_namespace: astra-sites
+    wpscan: https://wpscan.com/plugin/astra-sites
+  tags: tech,wordpress,wp-plugin,top-100,top-200
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/wp-content/plugins/astra-sites/readme.txt"
+
+    payloads:
+      last_version: helpers/wordpress/plugins/astra-sites.txt
+
+    extractors:
+      - type: regex
+        part: body
+        internal: true
+        name: internal_detected_version
+        group: 1
+        regex:
+          - '(?i)Stable.tag:\s?([\w.]+)'
+
+      - type: regex
+        part: body
+        name: detected_version
+        group: 1
+        regex:
+          - '(?i)Stable.tag:\s?([\w.]+)'
+
+    matchers-condition: or
+    matchers:
+      - type: dsl
+        name: "outdated_version"
+        dsl:
+          - compare_versions(internal_detected_version, concat("< ", last_version))
+
+      - type: regex
+        part: body
+        regex:
+          - '(?i)Stable.tag:\s?([\w.]+)'
+# digest: 4a0a00473045022100cd4090e4f6d30ada6962047cb7becce36be07702fb4b6147665436dd5e514bf90220526d607f849974a01ac6879d4f7d487007d1d020946a726259e04e0ea176e780:922c64590222798bb761d5b6d8e72950

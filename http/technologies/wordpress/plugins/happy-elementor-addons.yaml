@@ -1,0 +1,49 @@
+id: wordpress-happy-elementor-addons
+
+info:
+  name: Happy Addons for Elementor Detection
+  author: ricardomaia
+  severity: info
+  reference:
+    - https://wordpress.org/plugins/happy-elementor-addons/
+  metadata:
+    plugin_namespace: happy-elementor-addons
+    wpscan: https://wpscan.com/plugin/happy-elementor-addons
+  tags: tech,wordpress,wp-plugin,top-200
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/wp-content/plugins/happy-elementor-addons/readme.txt"
+
+    payloads:
+      last_version: helpers/wordpress/plugins/happy-elementor-addons.txt
+
+    extractors:
+      - type: regex
+        part: body
+        internal: true
+        name: internal_detected_version
+        group: 1
+        regex:
+          - '(?i)Stable.tag:\s?([\w.]+)'
+
+      - type: regex
+        part: body
+        name: detected_version
+        group: 1
+        regex:
+          - '(?i)Stable.tag:\s?([\w.]+)'
+
+    matchers-condition: or
+    matchers:
+      - type: dsl
+        name: "outdated_version"
+        dsl:
+          - compare_versions(internal_detected_version, concat("< ", last_version))
+
+      - type: regex
+        part: body
+        regex:
+          - '(?i)Stable.tag:\s?([\w.]+)'
+# digest: 4b0a00483046022100c70c634ef30f770ff005ee7c38bd567a152a40da8fcc7541f4acaddffe8756a80221009d76b15a5d06fb8f07c925289f266a7479aa465809b40c45ee3f6f765abbd321:922c64590222798bb761d5b6d8e72950
